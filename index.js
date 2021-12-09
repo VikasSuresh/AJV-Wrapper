@@ -32,7 +32,6 @@ ajv.addKeyword({
         }
         return () => false;
     },
-
     errors: false,
     metaSchema: {
         type: 'boolean',
