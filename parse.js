@@ -5,8 +5,7 @@ module.exports = (ajv) => {
     ajv.addKeyword({
         keyword: 'parse',
         type: 'string',
-        compile: (sch, parentSchema) => {
-            const { parse, format } = parentSchema;
+        compile: (parse, { format }) => {
             if (parse) {
                 return (data, { parentData, parentDataProperty }) => {
                     switch (format) {
