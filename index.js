@@ -1,141 +1,129 @@
+/* eslint-disable no-param-reassign */
 const { ObjectId } = require('mongodb');
 const Ajv = require('ajv');
 const addFormats = require('ajv-formats');
 
-const ajv = new Ajv({ useDefaults: true});
+const ajv = new Ajv({ useDefaults: true });
 ajv.addFormat('objectId', (id) => id.length === 24 && ObjectId.isValid(id));
 addFormats(ajv);
 
 ajv.addKeyword({
-    keyword:'parse',
+    keyword: 'parse',
     type: 'string',
-    compile:  (sch, parentSchema) => {
-        const { parse, format} = parentSchema
-        if(parse){
-            return (data,{parentData, parentDataProperty }) => { 
+    compile: (sch, parentSchema) => {
+        const { parse, format } = parentSchema;
+        if (parse) {
+            return (data, { parentData, parentDataProperty }) => {
                 switch (format) {
-                    case "objectId":
-                        parentData[parentDataProperty] = ObjectId(data);
-                        break;
-                    case "date":
-                        parentData[parentDataProperty] = new Date(data).toString();
-                        break;
-                    case "date-time":
-                        parentData[parentDataProperty] = new Date(data);
-                        break;
-                    default:
-                        break;
+                case 'objectId':
+                    parentData[ parentDataProperty ] = ObjectId(data);
+                    break;
+                case 'date':
+                    parentData[ parentDataProperty ] = new Date(data).toString();
+                    break;
+                case 'date-time':
+                    parentData[ parentDataProperty ] = new Date(data);
+                    break;
+                default:
+                    break;
                 }
-                return true; 
-            }
-        }else{
-            return ()=>false;   
+                return true;
+            };
         }
+        return () => false;
     },
 
     errors: false,
     metaSchema: {
-      type: "boolean",
-      const: true
+        type: 'boolean',
+        const: true,
     },
-  })
+});
 
-const main = (data,schema) =>{
+const main = (data, schema) => {
     try {
         const validate = ajv.compile(schema);
         const valid = validate(data);
-        if(!valid){
-            const error = new Error("error")
-            error.validations =validate.errors;
+        if (!valid) {
+            const error = new Error('error');
+            error.validations = validate.errors;
             throw error;
         }
-        console.log(data,"log")
+        console.log(data, 'log');
     } catch (error) {
-        console.log(error.validations,error.toString())
+        console.log(error.validations, error.toString());
     }
-   
-}
-
+};
 
 main({
-    "arrayOfObjects": [
-        {
-            objectIdInput:"12345678901234567890abcd",
-            "stringInput":"1"
+    objectIdInput: '12345678901234567890abcd',
+}, {
+    required: [],
+    type: 'object',
+    properties: {
+        dateInput: {
+            type: 'string',
+            format: 'date',
+            parse: true,
         },
-        {
-            objectIdInput:"09876543210987654321abcd",
-            "stringInput":"2"
-        }
-    ]
-},{
-    "required":[],
-    "type":"object",
-    "properties":{
-        "dateInput":{
-            "type":"string",
-            "format":"date",
-            "parse": true
+        number: {
+            type: 'number',
+            default: 10,
         },
-        "number":{
-            "type":"number",
-            "default":10
+        objectIdInput: {
+            type: 'string',
+            format: 'objectId',
+            parse: true,
         },
-        "objectIdInput":{
-            "type":"string",
-            "format":"objectId",
-            "parse": true
+        dateTimeInput: {
+            type: 'string',
+            format: 'date-time',
+            parse: true,
         },
-        "dateTimeInput":{
-            "type":"string",
-            "format":"date-time",
-            "parse": true
-        },
-        "object":{
-            "type":"object",
-            "required":["dateTimeInput"],
-            "additionalProperties":false,
-            "properties":{
-                "objectIdInput":{
-                    "type":"string",
-                    "format":"objectId",
-                    "parse": true
+        object: {
+            type: 'object',
+            required: ['dateTimeInput'],
+            additionalProperties: false,
+            properties: {
+                objectIdInput: {
+                    type: 'string',
+                    format: 'objectId',
+                    parse: true,
                 },
-                "dateTimeInput":{
-                    "type":"string",
-                    "format":"date-time",
-                    "parse": true
+                dateTimeInput: {
+                    type: 'string',
+                    format: 'date-time',
+                    parse: true,
                 },
-            }
+            },
         },
-        "arrayOfString":{
-            "type":"array",
-            "items":{
-                "type":"string",
-                "format":"objectId",
-                "parse":true
-            }
+        arrayOfString: {
+            type: 'array',
+            items: {
+                type: 'string',
+                format: 'objectId',
+                parse: true,
+            },
         },
-        "arrayOfObjects":{
-            "type":"array",
-            "items":{
-                "type":"object",
-                "required":["objectIdInput"],
-                "additionalProperties":false,
-                "properties":{
-                    "objectIdInput":{
-                        "type":"string",
-                        "format":"objectId",
-                        "parse":true
+        arrayOfObjects: {
+            type: 'array',
+            items: {
+                type: 'object',
+                required: ['objectIdInput'],
+                additionalProperties: false,
+                properties: {
+                    objectIdInput: {
+                        type: 'string',
+                        format: 'objectId',
+                        parse: true,
                     },
-                    "stringInput":{
-                        "type":"string",
-                        "parse":true
-                    }
-                }
-            }
-        }
+                    stringInput: {
+                        type: 'string',
+                        parse: true,
+                    },
+                },
+            },
+        },
     },
-    "additionalProperties":false
-})
-
+    additionalProperties: false,
+});
