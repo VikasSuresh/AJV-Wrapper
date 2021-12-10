@@ -3,12 +3,12 @@ const { ObjectId } = require('mongodb');
 
 module.exports = (ajv) => {
     ajv.addKeyword({
-        keyword: 'generated',
+        keyword: 'generate',
         type: 'string',
-        validate: function validate(generated, data, object, { parentData, parentDataProperty }) {
+        validate: function validate(generate, data, object, { parentData, parentDataProperty }) {
             let returnValue = true;
 
-            switch (generated) {
+            switch (generate) {
             case 'objectId':
                 parentData[ parentDataProperty ] = ObjectId();
                 break;
@@ -19,7 +19,7 @@ module.exports = (ajv) => {
                 parentData[ parentDataProperty ] = new Date();
                 break;
             default:
-                validate.errors = [{ keyword: 'generated', message: 'value should be valid.', params: { keyword: 'parse' } }];
+                validate.errors = [{ keyword: 'generate', message: 'value should be valid.', params: { keyword: 'generate' } }];
                 returnValue = false;
                 break;
             }
