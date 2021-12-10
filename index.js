@@ -1,7 +1,7 @@
 const Ajv = require('ajv');
-const Format = require('./format');
-const Parse = require('./parse');
-const Excerpt = require('./excerpt');
+const Format = require('./functions/format');
+const Parse = require('./functions/parse');
+const Excerpt = require('./functions/excerpt');
 
 const ajv = new Ajv({ useDefaults: true, $data: true });
 
@@ -11,6 +11,7 @@ Excerpt(ajv);
 
 const Main = (data, schema) => {
     try {
+        console.time('test');
         const validate = ajv.compile(schema);
         const valid = validate(data);
         if (!valid) {
@@ -19,6 +20,7 @@ const Main = (data, schema) => {
             throw error;
         }
         console.log(data, 'log');
+        console.timeEnd('test');
     } catch (error) {
         console.log(error.validations, error.toString());
     }
