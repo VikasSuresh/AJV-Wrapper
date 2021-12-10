@@ -1,19 +1,19 @@
-const Main = require('./index');
-
-const input = {
-    objectIdInput: '12345678901234567890abcd',
-};
-
-const schema = {
+module.exports = {
     required: [],
     type: 'object',
     properties: {
+        stringInput: {
+            type: 'string',
+        },
+        excerptInput: {
+            type: 'string',
+        },
         dateInput: {
             type: 'string',
             format: 'date',
             parse: true,
         },
-        number: {
+        numberInput: {
             type: 'number',
             default: 10,
         },
@@ -29,13 +29,21 @@ const schema = {
         },
         object: {
             type: 'object',
-            required: ['dateTimeInput'],
+            required: ['objectIdInput'],
             additionalProperties: false,
             properties: {
                 objectIdInput: {
                     type: 'string',
                     format: 'objectId',
                     parse: true,
+                },
+                stringInput: {
+                    type: 'string',
+                    default: '',
+                    excerpt: {
+                        $data: '2/',
+                        limit: 100,
+                    },
                 },
                 dateTimeInput: {
                     type: 'string',
@@ -75,4 +83,8 @@ const schema = {
     additionalProperties: false,
 };
 
-Main(input, schema);
+/* TODO
+    1.Check For AnyOf and other things
+    2.Check for required.
+    3. Check for null.
+*/

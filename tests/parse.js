@@ -1,0 +1,8 @@
+const Main = require('../index');
+const Schema = require('./schema');
+
+const input = {
+    objectIdInput: '12345678901234567890abcd',
+};
+
+Main(input, Schema);
