@@ -19,7 +19,7 @@ module.exports = (ajv) => {
                 parentData[ parentDataProperty ] = new Date(data);
                 break;
             default:
-                validate.errors = [{ keyword: 'parse', message: 'value should be valid format or format should be in [objectId, date, date-time].', params: { keyword: 'parse' } }];
+                validate.errors = [{ keyword: 'parse', message: 'value should be valid or format should be in [objectId, date, date-time].', params: { keyword: 'parse' } }];
                 returnValue = false;
                 break;
             }
