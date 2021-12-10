@@ -26,6 +26,7 @@ module.exports = (ajv) => {
             }
             return () => false;
         },
+        modifying: true,
         errors: false,
         metaSchema: {
             type: 'boolean',
