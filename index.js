@@ -1,11 +1,13 @@
 const Ajv = require('ajv');
 const Format = require('./format');
 const Parse = require('./parse');
+const Excerpt = require('./excerpt');
 
-const ajv = new Ajv({ useDefaults: true });
+const ajv = new Ajv({ useDefaults: true, $data: true });
 
 Format(ajv);
 Parse(ajv);
+Excerpt(ajv);
 
 const Main = (data, schema) => {
     try {
