@@ -25,7 +25,7 @@ const input = {
     excerptInput: '',
     objectIdInput: '12345678901234567890abcd',
     dateTimeInput: '2021-12-10T09:40:50.649Z',
-    generatedDateInput: '',
+    generatedDateInput: null,
     object: {
         objectIdInput: '12345678901234567890abcd',
         stringInput: '',
@@ -40,7 +40,7 @@ const input = {
     },
     {
         generatedId: '',
-        objectIdInput: '12345678901234567890abcd',
+        objectIdInput: null,
         stringInput: 'test',
     }],
 };

@@ -13,7 +13,7 @@ module.exports = {
             },
         },
         generatedDateInput: {
-            type: 'string',
+            type: ['string', 'null'],
             generated: 'date',
         },
         dateInput: {
@@ -83,7 +83,7 @@ module.exports = {
                         generated: 'objectId',
                     },
                     objectIdInput: {
-                        type: 'string',
+                        type: ['string', 'null'],
                         format: 'objectId',
                         parse: true,
                     },
