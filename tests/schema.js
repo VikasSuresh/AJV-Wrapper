@@ -12,7 +12,7 @@ module.exports = {
                 limit: 100,
             },
         },
-        generateDateInput: {
+        generatedDateInput: {
             type: 'string',
             generated: 'date',
         },
@@ -57,7 +57,7 @@ module.exports = {
                     format: 'date-time',
                     parse: true,
                 },
-                generateDateTimeInput: {
+                generatedDateTimeInput: {
                     type: 'string',
                     generated: 'date-time',
                 },

@@ -25,12 +25,12 @@ const input = {
     excerptInput: '',
     objectIdInput: '12345678901234567890abcd',
     dateTimeInput: '2021-12-10T09:40:50.649Z',
-    generateDateInput: '',
+    generatedDateInput: '',
     object: {
         objectIdInput: '12345678901234567890abcd',
         stringInput: '',
         dateTimeInput: '2021-12-10T09:40:50.649Z',
-        generateDateTimeInput: '',
+        generatedDateTimeInput: '',
     },
     arrayOfString: ['12345678901234567890abcd', '09876543210987654321abcd', '10293847561029384756abcd'],
     arrayOfObjects: [{
