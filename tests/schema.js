@@ -99,6 +99,20 @@ module.exports = {
                 { type: 'string', generate: 'date-time' },
             ],
         },
+        anyOfInput: {
+            anyOf: [
+                { type: 'string', format: 'date-time', parse: true },
+                { type: 'string', generate: 'objectId' },
+            ],
+        },
+        notInput: {
+            not: { type: 'string' },
+        },
+        allOfInput: {
+            allOf: [
+                { type: 'string', generate: 'date-time' },
+            ],
+        },
     },
     additionalProperties: false,
 };
