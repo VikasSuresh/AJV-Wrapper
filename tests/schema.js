@@ -14,7 +14,7 @@ module.exports = {
         },
         generatedDateInput: {
             type: ['string', 'null'],
-            generated: 'date',
+            generate: 'date',
         },
         dateInput: {
             type: 'string',
@@ -59,7 +59,7 @@ module.exports = {
                 },
                 generatedDateTimeInput: {
                     type: 'string',
-                    generated: 'date-time',
+                    generate: 'date-time',
                 },
             },
         },
@@ -80,7 +80,7 @@ module.exports = {
                 properties: {
                     generatedId: {
                         type: 'string',
-                        generated: 'objectId',
+                        generate: 'objectId',
                     },
                     objectIdInput: {
                         type: ['string', 'null'],
@@ -93,12 +93,18 @@ module.exports = {
                 },
             },
         },
+        oneOfInput: {
+            oneOf: [
+                { type: 'string', parse: true },
+                { type: 'string', parse: true },
+            ],
+        },
     },
     additionalProperties: false,
 };
 
 /* TODO
     1.Check For AnyOf and other things
-    2.Check for required.
-    3. Check for null.
+    2.Check for required - Working.
+    3. Check for null. - Working
 */
