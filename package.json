@@ -12,7 +12,8 @@
   "dependencies": {
     "ajv": "^8.8.2",
     "ajv-formats": "^2.1.1",
-    "mongodb": "^4.2.1"
+    "mongodb": "^4.2.1",
+    "string-strip-html": "^8.3.0"
   },
   "devDependencies": {
     "eslint": "^8.4.1",
