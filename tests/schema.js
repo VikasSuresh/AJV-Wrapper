@@ -7,6 +7,11 @@ module.exports = {
         },
         excerptInput: {
             type: 'string',
+            default: '',
+            excerpt: {
+                $data: '1/stringInput',
+                limit: 100,
+            },
         },
         dateInput: {
             type: 'string',
@@ -74,7 +79,6 @@ module.exports = {
                     },
                     stringInput: {
                         type: 'string',
-                        parse: true,
                     },
                 },
             },
