@@ -7,7 +7,6 @@ module.exports = {
         },
         excerptInput: {
             type: 'string',
-            default: '',
             excerpt: {
                 $data: '1/stringInput',
                 limit: 100,
@@ -48,7 +47,6 @@ module.exports = {
                 },
                 stringInput: {
                     type: 'string',
-                    default: '',
                     excerpt: {
                         $data: '2/stringInput',
                         limit: 100,
