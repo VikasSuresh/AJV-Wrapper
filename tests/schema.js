@@ -13,6 +13,10 @@ module.exports = {
                 limit: 100,
             },
         },
+        generateDateInput: {
+            type: 'string',
+            generated: 'date',
+        },
         dateInput: {
             type: 'string',
             format: 'date',
@@ -55,6 +59,10 @@ module.exports = {
                     format: 'date-time',
                     parse: true,
                 },
+                generateDateTimeInput: {
+                    type: 'string',
+                    generated: 'date-time',
+                },
             },
         },
         arrayOfString: {
@@ -72,6 +80,10 @@ module.exports = {
                 required: ['objectIdInput'],
                 additionalProperties: false,
                 properties: {
+                    generatedId: {
+                        type: 'string',
+                        generated: 'objectId',
+                    },
                     objectIdInput: {
                         type: 'string',
                         format: 'objectId',

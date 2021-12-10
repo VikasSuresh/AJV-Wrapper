@@ -2,12 +2,14 @@ const Ajv = require('ajv');
 const Format = require('./functions/format');
 const Parse = require('./functions/parse');
 const Excerpt = require('./functions/excerpt');
+const Generated = require('./functions/generated');
 
 const ajv = new Ajv({ useDefaults: true, $data: true });
 
 Format(ajv);
 Parse(ajv);
 Excerpt(ajv);
+Generated(ajv);
 
 const Main = (data, schema) => {
     try {
