@@ -7,6 +7,8 @@ const input = {
         objectIdInput: '12345678901234567890abcd',
         stringInput: 'test',
     }],
+    object: { generatedDateTimeInput: '', objectIdInput: '12345678901234567890abcd' },
+    generatedDateInput: '',
 };
 
 Main(input, Schema);
