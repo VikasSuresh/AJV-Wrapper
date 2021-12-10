@@ -41,7 +41,7 @@ module.exports = {
                     type: 'string',
                     default: '',
                     excerpt: {
-                        $data: '2/',
+                        $data: '2/stringInput',
                         limit: 100,
                     },
                 },
