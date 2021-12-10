@@ -95,8 +95,8 @@ module.exports = {
         },
         oneOfInput: {
             oneOf: [
-                { type: 'string', parse: true },
-                { type: 'string', parse: true },
+                { type: 'string', format: 'date-time', parse: true },
+                { type: 'string', generate: 'date-time' },
             ],
         },
     },
