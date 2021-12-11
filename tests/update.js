@@ -85,6 +85,19 @@ const keywords = ['$each', '$in'];
 
 const validate = check.compile(Schema);
 
+const hasError = (data) => {
+    const valid = validate(data);
+
+    if (!valid) {
+        const error = new Error('Arguments Validation Failed!');
+        error.validations = validate.errors;
+        error.errorCode = 400;
+        throw error;
+    }
+
+    return data;
+};
+
 const recur = (input, level = '') => {
     let compiled = {};
     if (isObject(input)) {
@@ -111,25 +124,13 @@ const recur = (input, level = '') => {
             [ returnVariable ]: input,
         };
 
-        const valid = validate(input);
-        if (!valid) {
-            const error = new Error('Arguments Validation Failed!');
-            error.validations = validate.errors;
-            error.errorCode = 400;
-            throw error;
-        }
+        input = hasError(input);
 
         return input[ returnVariable ];
     }
 
     if (input && Object.keys(input).length > 0) {
-        const valid = validate(input);
-        if (!valid) {
-            const error = new Error('Arguments Validation Failed!');
-            error.validations = validate.errors;
-            error.errorCode = 400;
-            throw error;
-        }
+        input = hasError(input);
     }
 
     return {
@@ -139,3 +140,25 @@ const recur = (input, level = '') => {
 };
 
 console.log(util.inspect(recur(update), { showHidden: false, depth: null, colors: true }));
+
+/*
+    isObject - Checks whether the data is an object
+    fetchParentLevel - Returns concatenated value in case of normal field in case if $ comes will return the original field.
+    skipKeywords - for skipping wihtout validating
+    keywords - make sure the values are validated
+    validate - ajv compile
+    hasError - Gets the input and validate if it has error it throws else return data
+
+    recur:
+        - Gets the input as an object
+        - When its an object it ll iterate
+            - If it is included in skipKeywords the field is deleted.
+            - If it is an object or included in keywords, recur is called again and the field is deleted.
+            - If it is none of those then it is kept in input object
+
+        - The input obtained either from iterator or from function is checked whether its an arry or object
+        - The input is validated against schema.
+        - If its an array its returend
+        - Else its spreaded
+
+*/
