@@ -54,18 +54,18 @@ const Schema = {
 };
 
 const update = {
-    // $set: {
-    //     message: '1',
-    //     objectId: '',
-    // },
-    // $push: {
-    //     // userIds: '12345678901234567890abcd',
-    //     quizzes: {
-    //         $each: [{ wk: 5, score: 8 }, { wk: 6, score: 7 }, { wk: 7, score: 6 }],
-    //         $sort: { score: -1 },
-    //         $slice: 3,
-    //     },
-    // },
+    $set: {
+        message: '1',
+        objectId: '',
+    },
+    $push: {
+        // userIds: '12345678901234567890abcd',
+        quizzes: {
+            $each: [{ wk: 5, score: 8 }, { wk: 6, score: 7 }, { wk: 7, score: 6 }],
+            $sort: { score: -1 },
+            $slice: 3,
+        },
+    },
     $pull: {
         tags: {
             $in: [
