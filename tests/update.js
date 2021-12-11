@@ -73,7 +73,7 @@ const update = {
             ],
         },
     },
-    // objectId: '',
+    objectId: '',
 };
 
 const isObject = (data) => data && typeof data === 'object' && !Array.isArray(data);
@@ -85,16 +85,10 @@ const keywords = ['$each', '$in'];
 
 const validate = check.compile(Schema);
 
-const recur = (input, level = '', parentLevel = '') => {
+const recur = (input, level = '') => {
     let compiled = {};
     if (isObject(input)) {
         compiled = Object.keys(input).reduce((acc, field) => {
-            if (!field.startsWith('$') && level === '') {
-                const throwError = new Error('Update Should have an Atomic Operator!');
-                throwError.errorCode = 400;
-                throw throwError;
-            }
-
             if (skipKeywords.includes(field)) {
                 const returnData = { ...acc, [ field ]: input[ field ] };
                 delete input[ field ];
@@ -102,7 +96,7 @@ const recur = (input, level = '', parentLevel = '') => {
             }
 
             if (isObject(input[ field ]) || keywords.includes(field)) {
-                const recuredData = { ...acc, [ field ]: recur(input[ field ], `${ field }`, fetchParentLevel(field, parentLevel)) };
+                const recuredData = { ...acc, [ field ]: recur(input[ field ], fetchParentLevel(field, level)) };
                 delete input[ field ];
                 return recuredData;
             }
@@ -112,7 +106,7 @@ const recur = (input, level = '', parentLevel = '') => {
     }
 
     if (Array.isArray(input)) {
-        const returnVariable = parentLevel.slice(1);
+        const returnVariable = level.slice(1);
         input = {
             [ returnVariable ]: input,
         };
