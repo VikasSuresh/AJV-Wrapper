@@ -39,6 +39,10 @@ const Schema = {
             items: {
                 type: 'object',
                 properties: {
+                    _id: {
+                        type: 'string',
+                        generate: 'objectId',
+                    },
                     wk: {
                         type: 'number',
                     },
@@ -59,7 +63,7 @@ const update = {
         objectId: '',
     },
     $push: {
-        // userIds: '12345678901234567890abcd',
+        userIds: '12345678901234567890abcd',
         quizzes: {
             $each: [{ wk: 5, score: 8 }, { wk: 6, score: 7 }, { wk: 7, score: 6 }],
             $sort: { score: -1 },
@@ -72,8 +76,15 @@ const update = {
                 '12345678901234567890abcd',
             ],
         },
+        quizzes: {
+            _id: {
+                $in: ['12345678901234567890abcd'],
+            },
+        },
     },
-    objectId: '',
+    objectId: {
+        $in: ['12345678901234567890abcd'],
+    },
 };
 
 const isObject = (data) => data && typeof data === 'object' && !Array.isArray(data);
