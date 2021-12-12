@@ -13,6 +13,7 @@
     "ajv": "^8.8.2",
     "ajv-formats": "^2.1.1",
     "mongodb": "^4.2.1",
+    "object-path": "^0.11.8",
     "string-strip-html": "^8.3.0"
   },
   "devDependencies": {
