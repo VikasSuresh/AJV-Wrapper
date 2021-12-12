@@ -73,30 +73,38 @@ const Schema = {
                 required: [],
             },
         },
+        settings: {
+            type: 'object',
+            properties: {
+                isDeleted: { type: 'boolean' },
+            },
+            additionalProperties: false,
+            required: [],
+        },
     },
 };
 
 const update = {
-    // $set: {
-    //     message: '1',
-    //     objectId: '',
-    //     userIds: ['12345678901234567890abcd'],
-    //     tag: {
-    //         number: 1,
-    //     },
-    // },
-    // $unset: {
-    //     message: '',
-    // },
-    // $push: {
-    //     userIds: '12345678901234567890abcd',
-    //     // userIds: ['12345678901234567890abcd'],
-    //     quizzes: {
-    //         $each: [{ _id: '', wk: 5, score: 8 }, { _id: '', wk: 6, score: 7 }, { _id: '', wk: 7, score: 6 }],
-    //         $sort: { score: -1 },
-    //         $slice: 3,
-    //     },
-    // },
+    $set: {
+        message: '1',
+        objectId: '61b60ce0a6180192a2909de4',
+        userIds: ['61b60ce0a6180192a2909de4'],
+        tag: {
+            number: 1,
+        },
+    },
+    $unset: {
+        message: '',
+    },
+    $push: {
+        // userIds: '12345678901234567890abcd',
+        userIds: ['12345678901234567890abcd'],
+        // quizzes: {
+        //     $each: [{ _id: '', wk: 5, score: 8 }, { _id: '', wk: 6, score: 7 }, { _id: '', wk: 7, score: 6 }],
+        //     $sort: { score: -1 },
+        //     $slice: 3,
+        // },
+    },
     // $pullAll: {
     //     // userIds: '12345678901234567890abcd',
     //     userIds: ['12345678901234567890abcd'],
@@ -113,25 +121,24 @@ const update = {
     //         },
     //     },
     // },
-    objectId: {
-        $in: ['12345678901234567890abcd'],
-    },
-    message: {
-        $ne: '',
-    },
-    userIds: '',
-    tag: {
-        number: {
-            $eq: 12,
-        },
-    },
+    // 'settings.isDeleted': false,
+    // objectId: {
+    //     $in: ['12345678901234567890abcd'],
+    // },
+    // message: {
+    //     $ne: '',
+    // },
+    // userIds: '',
+    // tag: {
+    //     number: {
+    //         $eq: 12,
+    //     },
+    // },
 };
 
 const isObject = (data) => data && typeof data === 'object' && !Array.isArray(data);
 
 const skipKeywords = ['$sort', '$slice', '$unset'];
-
-const arrayKeywords = ['$each', '$in'];
 
 const executeableKeywords = ['$set'];
 
@@ -148,28 +155,63 @@ const hasError = (data, schema) => {
     return data;
 };
 
-const buildSchema = (cond, level) => {
+const generateSchema = (level, path = '') => {
+    if (level.length === 0) {
+        return objectPath.get(Schema, path.slice(0, -1));
+    }
+
+    if (objectPath.get(Schema, `${ path }properties.${ level[ 0 ] }`)) {
+        return generateSchema(level.slice(1), `${ path }properties.${ level[ 0 ] }.`);
+    }
+
+    if (objectPath.get(Schema, `${ path }items.properties.${ level[ 0 ] }`)) {
+        return generateSchema(level.slice(1), `${ path }items.properties.${ level[ 0 ] }.`);
+    }
+
+    const error = new Error('Invalid Path Level!');
+    error.errorCode = 406;
+    throw error;
+};
+
+const build = (cond, level, input) => {
     cond = cond.filter((el) => el);
     level = level.filter((el) => el);
 
+    const defaultSchema = generateSchema(level);
+
     let schema = {};
     if (cond.includes('$push') || cond.includes('$pull') || cond.includes('$pullAll')) {
-        const defaultArraySchema = objectPath.get(Schema, `properties.${ level[ level.length - 1 ] }`);
-        if (cond.includes('$each')) {
-            schema = defaultArraySchema;
-        } else {
-            schema = {
-                oneOf: [
-                    objectPath.get(Schema, `properties.${ level[ level.length - 1 ] }.items`),
-                    defaultArraySchema,
-                ],
-            };
-        }
+        schema = {
+            oneOf: [
+                defaultSchema.items,
+                defaultSchema,
+            ],
+        };
     } else if (cond.includes('$in') || cond.includes('$nin')) {
-
+        schema = {
+            oneOf: [
+                defaultSchema,
+                {
+                    type: 'array',
+                    items: defaultSchema,
+                },
+            ],
+        };
+    } else {
+        schema = defaultSchema;
     }
 
-    return schema;
+    if (Array.isArray(input)) {
+        input = hasError(input, schema);
+        return input;
+    }
+    input = hasError(
+        { field: input },
+        {
+            type: 'object', additionalProperties: false, required: [], properties: { field: schema },
+        },
+    );
+    return input.field;
 };
 
 const Parser = (input, compiled, parentLevel) => {
@@ -180,25 +222,11 @@ const Parser = (input, compiled, parentLevel) => {
 
         if (executeableKeywords.includes(cond[ 0 ])) {
             input = hasError(input, Schema);
-        } else if (Array.isArray(input)) {
-            const schema = buildSchema(cond, level);
-
-            input = hasError(input, schema);
-
-            return input;
         } else {
-            const schema = Object.keys(input).reduce((a, k) => ({
+            input = Object.entries(input).reduce((a, [k, v]) => ({
                 ...a,
-                [ k ]: k.startsWith('$') ? buildSchema([...cond, k], level) : buildSchema(cond, [...level, k]),
+                [ k ]: k.startsWith('$') ? build([...cond, k], level, v) : build(cond, [...level, k], v),
             }), {});
-
-            console.log(schema);
-
-            input = hasError(input, {
-                type: 'object',
-                properties: schema,
-                additionalProperties: false,
-            });
         }
     }
     return {
@@ -217,7 +245,7 @@ const recur = (input, level = '', before = '') => {
                 return returnData;
             }
 
-            if (isObject(input[ field ]) || arrayKeywords.includes(field)) {
+            if (isObject(input[ field ])) {
                 const recuredData = { ...acc, [ field ]: recur(input[ field ], `${ level }.${ field }`, field) };
                 delete input[ field ];
                 return recuredData;
@@ -229,8 +257,8 @@ const recur = (input, level = '', before = '') => {
 
     return Parser(input, compiled, level);
 };
-
-console.log(util.inspect(recur(update), { showHidden: false, depth: null, colors: true }));
+const log = recur(update);
+console.log(util.inspect(log, { showHidden: false, depth: null, colors: true }));
 
 /*
     isObject - Checks whether the data is an object
