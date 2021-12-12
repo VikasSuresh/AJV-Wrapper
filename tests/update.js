@@ -34,7 +34,7 @@ const Schema = {
         userIds: {
             type: 'array',
             items: {
-                type: 'string',
+                type: ['string', 'null'],
                 format: 'objectId',
                 parse: true,
             },
@@ -85,26 +85,26 @@ const Schema = {
 };
 
 const update = {
-    $set: {
-        message: '1',
-        objectId: '61b60ce0a6180192a2909de4',
-        userIds: ['61b60ce0a6180192a2909de4'],
-        tag: {
-            number: 1,
-        },
-    },
-    $unset: {
-        message: '',
-    },
-    $push: {
-        // userIds: '12345678901234567890abcd',
-        userIds: ['12345678901234567890abcd'],
-        // quizzes: {
-        //     $each: [{ _id: '', wk: 5, score: 8 }, { _id: '', wk: 6, score: 7 }, { _id: '', wk: 7, score: 6 }],
-        //     $sort: { score: -1 },
-        //     $slice: 3,
-        // },
-    },
+    // $set: {
+    //     message: '1',
+    //     objectId: '61b60ce0a6180192a2909de4',
+    //     userIds: ['61b60ce0a6180192a2909de4'],
+    //     tag: {
+    //         number: 1,
+    //     },
+    // },
+    // $unset: {
+    //     message: '',
+    // },
+    // $push: {
+    //     userIds: '12345678901234567890abcd',
+    //     // userIds: ['12345678901234567890abcd'],
+    //     quizzes: {
+    //         $each: [{ _id: '', wk: 5, score: 8 }, { _id: '', wk: 6, score: 7 }, { _id: '', wk: 7, score: 6 }],
+    //         $sort: { score: -1 },
+    //         $slice: 3,
+    //     },
+    // },
     // $pullAll: {
     //     // userIds: '12345678901234567890abcd',
     //     userIds: ['12345678901234567890abcd'],
@@ -128,11 +128,17 @@ const update = {
     // message: {
     //     $ne: '',
     // },
-    // userIds: '',
+    // message: {
+    //     $nin: [''],
+    // },
+    // userIds: null,
     // tag: {
     //     number: {
     //         $eq: 12,
     //     },
+    // },
+    // $min: {
+    //     'tag.date': '2013-09-25',
     // },
 };
 
@@ -141,6 +147,8 @@ const isObject = (data) => data && typeof data === 'object' && !Array.isArray(da
 const skipKeywords = ['$sort', '$slice', '$unset'];
 
 const executeableKeywords = ['$set'];
+
+const arrayKeywords = ['$push', '$pull', '$pullAll'];
 
 const hasError = (data, schema) => {
     const validate = check.compile(schema);
@@ -180,10 +188,10 @@ const build = (cond, level, input) => {
     const defaultSchema = generateSchema(level);
 
     let schema = {};
-    if (cond.includes('$push') || cond.includes('$pull') || cond.includes('$pullAll')) {
+    if (cond.some((op) => arrayKeywords.includes(op)) || (defaultSchema.type === 'array' && cond.length === 0)) {
         schema = {
             oneOf: [
-                defaultSchema.items,
+                defaultSchema.items || { type: 'array', items: defaultSchema },
                 defaultSchema,
             ],
         };
@@ -225,7 +233,7 @@ const Parser = (input, compiled, parentLevel) => {
         } else {
             input = Object.entries(input).reduce((a, [k, v]) => ({
                 ...a,
-                [ k ]: k.startsWith('$') ? build([...cond, k], level, v) : build(cond, [...level, k], v),
+                [ k ]: k.startsWith('$') ? build([...cond, k], level, v) : build(cond, [...level, ...k.split('.')], v),
             }), {});
         }
     }
